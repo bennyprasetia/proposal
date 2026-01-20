@@ -1,0 +1,1829 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Proposal Sistem POS & Online Ordering — Burger Bangor</title>
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#ffffff;
+      --ink:#0f172a;
+      --muted:#64748b;
+      --line: rgba(15,23,42,.12);
+
+      --glass: rgba(255,255,255,.06);
+      --glass2: rgba(255,255,255,.11);
+
+      --accent:#f59e0b;   /* orange */
+      --blue:#2563eb;
+      --green:#16a34a;
+
+      --radius:18px;
+      --shadow: 0 18px 55px rgba(0,0,0,.35);
+      --shadow2: 0 10px 26px rgba(15,23,42,.10);
+
+      --max: 1240px;
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:#fff;
+      background:
+        radial-gradient(900px 650px at 20% 10%, rgba(245,158,11,.18), transparent 55%),
+        radial-gradient(900px 650px at 85% 10%, rgba(37,99,235,.14), transparent 55%),
+        radial-gradient(900px 650px at 60% 95%, rgba(22,163,74,.10), transparent 55%),
+        var(--bg);
+    }
+
+    .wrap{
+      max-width: var(--max);
+      margin: 16px auto;
+      padding: 0 14px 24px;
+      display:grid;
+      grid-template-columns: 330px 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      position: sticky;
+      top: 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass2);
+      border-radius: var(--radius);
+      padding: 14px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+    .brand{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding: 6px 8px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      margin-bottom: 10px;
+    }
+    .dot{
+      width:12px;height:12px;border-radius:999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(245,158,11,.22);
+    }
+    .brand h1{ margin:0; font-size: 14px; letter-spacing:.2px; }
+    .brand p{ margin:2px 0 0; font-size:12px; color: rgba(255,255,255,.74); line-height:1.35; }
+
+    .navTitle{
+      font-size:12px;
+      letter-spacing:.12em;
+      color: rgba(255,255,255,.70);
+      text-transform:uppercase;
+      margin: 12px 8px 8px;
+    }
+    .nav a{
+      text-decoration:none;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      margin-bottom: 8px;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .nav a:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.10);
+    }
+    .nav a.active{
+      border-color: rgba(245,158,11,.55);
+      background: rgba(245,158,11,.14);
+    }
+    .badge{
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border: 1px solid rgba(255,255,255,.20);
+      color: rgba(255,255,255,.90);
+      white-space:nowrap;
+    }
+
+    .help{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.78);
+      font-size:12px;
+      line-height:1.55;
+    }
+    .kbd{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      font-size:12px;
+      margin: 0 2px;
+      white-space:nowrap;
+    }
+
+    /* Main */
+    .main{
+      background: var(--glass);
+      border: 1px solid var(--glass2);
+      border-radius: var(--radius);
+      padding: 14px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .hero{
+      border-radius: 18px;
+      padding: 18px 18px;
+      background:
+        radial-gradient(900px 650px at 20% 10%, rgba(245,158,11,.22), transparent 55%),
+        radial-gradient(900px 650px at 85% 10%, rgba(37,99,235,.16), transparent 55%),
+        rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      margin-bottom: 12px;
+    }
+    .hero h2{ margin:0; font-size:22px; letter-spacing:-.01em; }
+    .hero p{
+      margin: 8px 0 0;
+      color: rgba(255,255,255,.80);
+      line-height:1.6;
+      max-width: 92ch;
+      font-size: 13px;
+    }
+    .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top: 10px; }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-size: 12px;
+      color: rgba(255,255,255,.90);
+    }
+
+    .section{
+      background: var(--card);
+      color: var(--ink);
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow2);
+      padding: 16px 16px;
+      margin-bottom: 12px;
+    }
+    .sectionHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 8px;
+    }
+    .sectionHeader h3{ margin:0; font-size: 16px; letter-spacing:-.01em; }
+    .sectionHeader .meta{
+      text-align:right;
+      color: var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .lead{
+      margin:0 0 10px;
+      color: rgba(15,23,42,.86);
+      line-height:1.65;
+      font-size: 13px;
+    }
+
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    .card{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 12px;
+      background: #fff;
+    }
+    .card h4{ margin:0 0 6px; font-size: 13px; letter-spacing:.02em; }
+    .card ul{
+      margin: 0 0 0 18px;
+      color: rgba(15,23,42,.86);
+      line-height:1.55;
+      font-size: 13px;
+    }
+    .callout{
+      border-radius: 16px;
+      border: 1px solid rgba(245,158,11,.30);
+      background: rgba(245,158,11,.10);
+      padding: 12px 12px;
+      color: rgba(15,23,42,.88);
+      margin-top: 10px;
+      line-height:1.55;
+      font-size: 13px;
+    }
+    .noteBlue{
+      border: 1px solid rgba(37,99,235,.24);
+      background: rgba(37,99,235,.08);
+      border-radius: 16px;
+      padding: 12px 12px;
+      margin-top: 10px;
+      color: rgba(15,23,42,.88);
+      font-size:13px;
+      line-height:1.55;
+    }
+    .noteGreen{
+      border: 1px solid rgba(22,163,74,.22);
+      background: rgba(22,163,74,.08);
+      border-radius: 16px;
+      padding: 12px 12px;
+      margin-top: 10px;
+      color: rgba(15,23,42,.88);
+      font-size:13px;
+      line-height:1.55;
+    }
+    /* Contact Section */
+    .contactSection{
+      margin-top: 10px;
+      border-radius: 18px;
+      border: 1px solid rgba(37,99,235,.20);
+      background: linear-gradient(135deg, rgba(37,99,235,.08) 0%, rgba(37,99,235,.04) 100%);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .contactSection::before{
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(37,99,235,.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .contactHeader{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+    .contactHeader h4{
+      margin: 0;
+      font-size: 16px;
+      color: var(--ink);
+      letter-spacing: -.01em;
+    }
+    .contactIcon{
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(37,99,235,.12);
+      border: 1px solid rgba(37,99,235,.20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .contactGrid{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .contactItem{
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      background: rgba(255,255,255,.60);
+      border: 1px solid rgba(37,99,235,.15);
+      border-radius: 14px;
+      transition: all .2s ease;
+    }
+    .contactItem:hover{
+      background: rgba(255,255,255,.85);
+      border-color: rgba(37,99,235,.30);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37,99,235,.12);
+    }
+    .contactItemIcon{
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(37,99,235,.10);
+      border: 1px solid rgba(37,99,235,.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      color: #2563eb;
+    }
+    .contactItemContent{
+      flex: 1;
+      min-width: 0;
+    }
+    .contactItemLabel{
+      font-size: 11px;
+      color: rgba(15,23,42,.60);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .contactItemValue{
+      font-size: 13px;
+      color: rgba(15,23,42,.90);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .contactItemValue a{
+      color: #2563eb;
+      text-decoration: none;
+      transition: color .2s ease;
+    }
+    .contactItemValue a:hover{
+      color: #1d4ed8;
+      text-decoration: underline;
+    }
+    .contactItemValue b{
+      color: var(--ink);
+      font-weight: 600;
+    }
+    /* Enhanced Visual Components */
+    .featureCard{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: #fff;
+      transition: all .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .featureCard::before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent);
+    }
+    .featureCard:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15,23,42,.08);
+      border-color: rgba(245,158,11,.30);
+    }
+    .featureCardIcon{
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(245,158,11,.10);
+      border: 1px solid rgba(245,158,11,.20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    .featureCard h4{
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .featureCard p{
+      margin: 0;
+      color: rgba(15,23,42,.75);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .featureCard ul{
+      margin: 8px 0 0 0;
+      padding-left: 20px;
+      color: rgba(15,23,42,.80);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+    .featureCard li{
+      margin: 6px 0;
+    }
+    .problemCard{
+      border-left: 4px solid #ef4444;
+      background: rgba(239,68,68,.05);
+    }
+    .solutionCard{
+      border-left: 4px solid var(--green);
+      background: rgba(22,163,74,.05);
+    }
+    .moduleCard{
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+      transition: all .2s ease;
+    }
+    .moduleCard:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15,23,42,.06);
+      border-color: rgba(37,99,235,.25);
+    }
+    .moduleCardHeader{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .moduleCardIcon{
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(37,99,235,.10);
+      border: 1px solid rgba(37,99,235,.20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .moduleCard h4{
+      margin: 0;
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .moduleCard ul{
+      margin: 0;
+      padding-left: 18px;
+      color: rgba(15,23,42,.80);
+      line-height: 1.65;
+      font-size: 13px;
+    }
+    .moduleCard li{
+      margin: 5px 0;
+    }
+    .simpleExplanation{
+      background: rgba(255,255,255,.70);
+      border: 1px solid rgba(37,99,235,.15);
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 1.65;
+      color: rgba(15,23,42,.85);
+    }
+    .simpleExplanation b{
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .benefitCard{
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      background: rgba(22,163,74,.05);
+      border: 1px solid rgba(22,163,74,.15);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+    .benefitIcon{
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(22,163,74,.12);
+      border: 1px solid rgba(22,163,74,.20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .benefitText{
+      flex: 1;
+      font-size: 13px;
+      color: rgba(15,23,42,.85);
+      line-height: 1.6;
+    }
+    .timelineItem{
+      display: flex;
+      gap: 14px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .timelineItem:not(:last-child)::after{
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 48px;
+      width: 2px;
+      height: calc(100% + 4px);
+      background: rgba(37,99,235,.15);
+    }
+    .timelineIcon{
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(37,99,235,.12);
+      border: 2px solid rgba(37,99,235,.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .timelineContent{
+      flex: 1;
+      padding-top: 4px;
+    }
+    .timelineContent h4{
+      margin: 0 0 4px;
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .timelineContent p{
+      margin: 0;
+      font-size: 13px;
+      color: rgba(15,23,42,.75);
+      line-height: 1.6;
+    }
+    .pricingCard{
+      border: 2px solid rgba(245,158,11,.20);
+      border-radius: 18px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,.95) 0%, rgba(255,247,237,.50) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .pricingCard::before{
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(245,158,11,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .pricingCard h4{
+      margin: 0 0 12px;
+      font-size: 15px;
+      color: var(--ink);
+      position: relative;
+      z-index: 1;
+    }
+    .pricingAmount{
+      font-size: 36px;
+      font-weight: 900;
+      margin: 12px 0;
+      color: var(--ink);
+      position: relative;
+      z-index: 1;
+    }
+    .pricingDesc{
+      color: rgba(15,23,42,.75);
+      font-size: 13px;
+      line-height: 1.65;
+      position: relative;
+      z-index: 1;
+    }
+    .code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: rgba(15,23,42,.06);
+      border: 1px solid rgba(15,23,42,.10);
+      color: rgba(15,23,42,.85);
+      display:inline-block;
+      margin: 2px 2px;
+      white-space:nowrap;
+    }
+
+    /* Flow blocks */
+    .flowWrap{
+      margin-top: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      overflow:hidden;
+      background: #fff;
+    }
+    .flowHead{
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background: #fff;
+    }
+    .flowHead .title{
+      font-weight: 900;
+      font-size: 13px;
+      color: var(--ink);
+    }
+    .flowHead .note{
+      color: var(--muted);
+      font-size: 12px;
+      text-align:right;
+    }
+    .flowExplain{
+      padding: 12px 12px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+    .flowExplain h4{ margin:0 0 8px; font-size: 13px; letter-spacing:.01em; color: var(--ink); }
+    .flowExplain ol{
+      margin: 0 0 10px 18px;
+      line-height:1.65;
+      font-size: 13px;
+      color: rgba(15,23,42,.86);
+    }
+    .flowExplain li{ margin: 6px 0; }
+
+    /* Appendix gallery */
+    .gallery{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .shot{
+      grid-column: span 6;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background:#fff;
+      overflow:hidden;
+      box-shadow: 0 8px 22px rgba(15,23,42,.06);
+    }
+    .shot.wide{ grid-column: span 12; }
+    .shot .cap{
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #f8fafc;
+    }
+    .shot .cap b{ display:block; font-size: 13px; color: var(--ink); }
+    .shot .cap span{ font-size: 12px; color: var(--muted); }
+    .shot img{
+      width:100%;
+      height:auto;
+      display:block;
+      background:#f1f5f9;
+    }
+    .shot .src{
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+    .shot .src a{ color: #0b3aa9; text-decoration: none; }
+    .shot .src a:hover{ text-decoration: underline; }
+
+    /* Footer controls */
+    .pager{
+      display:flex;
+      gap:10px;
+      margin-top: 12px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:#fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    @media (max-width: 980px){
+      .wrap{ grid-template-columns: 1fr; }
+      .sidebar{ position: relative; top:auto; }
+      .grid2, .grid3{ grid-template-columns: 1fr; }
+      .shot{ grid-column: span 12; }
+      .contactGrid{ grid-template-columns: 1fr; }
+      .pricingCard{ margin-bottom: 12px; }
+      .timelineItem::after{ display: none; }
+    }
+
+    @media print{
+      body{ background:#fff; color:#000; }
+      .wrap{ max-width:100%; grid-template-columns: 1fr; }
+      .sidebar, .pager, .hero{ display:none !important; }
+      .main{ border:none; box-shadow:none; background:#fff; }
+      .section{ break-inside: avoid; box-shadow:none; }
+      .flowWrap{ break-inside: avoid; }
+      a{ color:#000; text-decoration:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="dot"></span>
+        <div>
+          <h1>Proposal Sistem POS & Online Ordering</h1>
+          <p>Burger Bangor — versi HTML (rapi & mudah dipahami)</p>
+        </div>
+      </div>
+
+      <div class="navTitle">Urutan baca</div>
+      <nav class="nav" id="nav">
+        <a href="#ringkasan" data-i="0"><span>1) Ringkasan</span><span class="badge">Start</span></a>
+        <a href="#about-osu" data-i="1"><span>2) About OSU</span><span class="badge">Company</span></a>
+        <a href="#masalah" data-i="2"><span>3) Masalah & Tujuan</span><span class="badge">Why</span></a>
+        <a href="#scope" data-i="3"><span>4) Ruang Lingkup</span><span class="badge">What</span></a>
+        <a href="#flow" data-i="4"><span>5) Flow Operasional</span><span class="badge">How</span></a>
+        <a href="#modules" data-i="5"><span>6) Modul Sistem</span><span class="badge">Modules</span></a>
+        <a href="#saas" data-i="6"><span>7) Implementasi & SaaS</span><span class="badge">Delivery</span></a>
+        <a href="#pricing" data-i="7"><span>8) Estimasi Biaya</span><span class="badge">TBD</span></a>
+        <a href="#closing" data-i="8"><span>9) Closing</span><span class="badge">End</span></a>
+        <a href="#appendix-a" data-i="9"><span>Appendix A — UI Reference</span><span class="badge">Appendix</span></a>
+      </nav>
+
+      <div class="help">
+        <b>Tips baca cepat:</b><br/>
+        Mulai dari <b>Ringkasan</b> → <b>Why</b> → <b>What</b> → <b>How</b> → Pricing → Appendix.<br/><br/>
+        <b>Export PDF:</b> <span class="kbd">Ctrl</span>/<span class="kbd">Cmd</span> + <span class="kbd">P</span> → Save as PDF
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <div class="hero">
+        <h2>💼 Proposal Sistem POS & Online Ordering Terintegrasi</h2>
+        <p>
+          Dokumen ini menjelaskan sistem terintegrasi untuk mengelola <b>pesanan makan di tempat</b>, <b>pesanan online dengan pengantaran</b>, 
+          dan <b>pesanan ambil sendiri</b>. Semua dalam satu platform yang mudah digunakan.
+        </p>
+        <div class="simpleExplanation" style="background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.20); color: rgba(255,255,255,.90); margin-top: 12px;">
+          <b>📖 Cara Membaca:</b> Mulai dari <b>Ringkasan</b> untuk overview, lalu baca bagian <b>Masalah & Tujuan</b>, 
+          <b>Ruang Lingkup</b>, dan <b>Flow Operasional</b>. Gambar contoh ada di bagian akhir (Appendix).
+        </div>
+        <div class="chips">
+          <span class="chip">🍽️ <b>Dine-In</b> · Makan di tempat</span>
+          <span class="chip">📱 <b>Online</b> · Delivery & Pickup</span>
+          <span class="chip">🚚 <b>Kurir</b> · Internal / Grab / GoJek</span>
+          <span class="chip">☁️ <b>SaaS</b> · Langganan bulanan (termasuk hosting)</span>
+        </div>
+      </div>
+
+      <!-- 1. Ringkasan -->
+      <section class="section" id="ringkasan">
+        <div class="sectionHeader">
+          <h3>1) Ringkasan</h3>
+          <div class="meta">Start here</div>
+        </div>
+        <p class="lead">
+          Burger Bangor membutuhkan sistem terintegrasi untuk transaksi <b>dine-in</b> (makan di tempat), pemesanan <b>online</b>,
+          serta operasional <b>delivery</b> (pengantaran) dan <b>pickup</b> (ambil sendiri) secara terpusat, cepat, dan terkontrol.
+        </p>
+
+        <div class="simpleExplanation">
+          <b>💡 Penjelasan sederhana:</b> Sistem ini akan menggabungkan semua proses penjualan (kasir, dapur, pesanan online) 
+          dalam satu platform yang mudah digunakan. Semua data tersimpan di cloud (internet), jadi bisa diakses dari mana saja.
+        </div>
+
+        <div class="grid2" style="margin-top: 16px;">
+          <div class="featureCard">
+            <div class="featureCardIcon">📦</div>
+            <h4>Yang Akan Disediakan</h4>
+            <p style="margin-bottom: 10px; color: rgba(15,23,42,.70);">Semua aplikasi dan sistem yang dibutuhkan:</p>
+            <ul>
+              <li><b>Komputer Kasir</b> — untuk input pesanan dan pembayaran</li>
+              <li><b>Monitor Dapur</b> — untuk melihat antrian pesanan</li>
+              <li><b>Aplikasi Pelanggan</b> — untuk pesan online via HP</li>
+              <li><b>Sistem Pengantaran</b> — bisa pakai kurir sendiri atau Grab/GoJek</li>
+              <li><b>Counter Pickup</b> — untuk pesanan ambil sendiri</li>
+            </ul>
+          </div>
+          <div class="featureCard">
+            <div class="featureCardIcon">✨</div>
+            <h4>Manfaat Utama</h4>
+            <p style="margin-bottom: 10px; color: rgba(15,23,42,.70);">Apa yang akan didapat setelah sistem berjalan:</p>
+            <ul>
+              <li><b>Pesanan lebih cepat</b> — tidak perlu tulis manual, minim salah</li>
+              <li><b>Tracking lengkap</b> — tahu status pesanan dari awal sampai selesai</li>
+              <li><b>Operasional rapi</b> — setiap bagian punya tugas jelas</li>
+              <li><b>Laporan real-time</b> — data penjualan langsung terlihat</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="noteBlue" style="margin-top: 16px;">
+          <b>📋 Catatan:</b> Gambar contoh tampilan sistem ada di bagian <b>Appendix A</b> (halaman terakhir) untuk membantu visualisasi.
+        </div>
+      </section>
+
+       <!-- 2 About OSU -->
+    <section class="section" id="about-osu">
+      <div class="sectionHeader">
+        <h3>2) Pengenalan PT. Optimus Solusindo Utama</h3>
+        <div class="meta">About Us</div>
+      </div>
+
+      <p class="lead">
+        <b>PT Optimus Solusindo Utama (OSU)</b> adalah perusahaan teknologi informasi yang fokus membuat sistem berbasis
+        <b>web</b>, <b>aplikasi mobile</b>, dan <b>integrasi digital</b> untuk berbagai jenis bisnis seperti
+        <b>perbankan</b>, <b>fintech</b>, <b>retail</b>, dan <b>manufaktur</b>.
+      </p>
+
+      <div class="simpleExplanation" style="margin-bottom: 16px;">
+        <b>💼 Profil Perusahaan:</b> Dengan pengalaman lebih dari <b>12 tahun</b>, OSU sudah membantu banyak perusahaan 
+        melakukan transformasi digital. Kami fokus pada solusi yang <b>efisien</b>, <b>aman</b>, dan <b>sesuai kebutuhan</b>.
+      </div>
+
+      <div class="grid3">
+        <div class="featureCard">
+          <div class="featureCardIcon">🎯</div>
+          <h4>Visi</h4>
+          <p>
+            Menjadi mitra teknologi terpercaya yang membantu bisnis di Indonesia berkembang melalui digitalisasi.
+          </p>
+        </div>
+        <div class="featureCard">
+          <div class="featureCardIcon">🚀</div>
+          <h4>Misi</h4>
+          <ul>
+            <li>Buat solusi teknologi yang inovatif & terukur</li>
+            <li>Sediakan sistem web & mobile yang aman</li>
+            <li>Berikan support & layanan purna jual terbaik</li>
+            <li>Tingkatkan daya saing bisnis melalui digitalisasi</li>
+            <li>Jadi perusahaan lokal dengan kualitas global</li>
+          </ul>
+        </div>
+        <div class="featureCard">
+          <div class="featureCardIcon">🛠️</div>
+          <h4>Layanan Kami</h4>
+          <ul>
+            <li><b>Aplikasi Mobile</b> — buat aplikasi HP</li>
+            <li><b>Web Development</b> — buat website & sistem web</li>
+            <li><b>Cloud & Server</b> — kelola hosting & infrastruktur</li>
+            <li><b>Software Development</b> — buat software custom</li>
+            <li><b>Integrasi Sistem</b> — hubungkan sistem berbeda</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="contactSection">
+        <div class="contactHeader">
+          <div class="contactIcon">📞</div>
+          <h4>Kontak Perusahaan</h4>
+        </div>
+        <div class="contactGrid">
+          <div class="contactItem">
+            <div class="contactItemIcon">🌐</div>
+            <div class="contactItemContent">
+              <div class="contactItemLabel">Website</div>
+              <div class="contactItemValue">
+                <a href="https://www.osu.co.id" target="_blank" rel="noopener">www.osu.co.id</a>
+              </div>
+            </div>
+          </div>
+          <div class="contactItem">
+            <div class="contactItemIcon">✉️</div>
+            <div class="contactItemContent">
+              <div class="contactItemLabel">Email</div>
+              <div class="contactItemValue">
+                <a href="mailto:info@osu.co.id">info@osu.co.id</a>
+              </div>
+            </div>
+          </div>
+          <div class="contactItem">
+            <div class="contactItemIcon">📍</div>
+            <div class="contactItemContent">
+              <div class="contactItemLabel">Alamat</div>
+              <div class="contactItemValue">
+                <b>Rukan CBD Green Lake City Blok C 69</b><br/>
+                Gondrong, Cipondoh, Tangerang<br/>
+                Banten 15146
+              </div>
+            </div>
+          </div>
+          <div class="contactItem">
+            <div class="contactItemIcon">☎️</div>
+            <div class="contactItemContent">
+              <div class="contactItemLabel">Telepon</div>
+              <div class="contactItemValue">
+                <a href="tel:+622123096007">(021) 23096007</a>
+              </div>
+            </div>
+          </div>
+          <div class="contactItem">
+            <div class="contactItemIcon">📱</div>
+            <div class="contactItemContent">
+              <div class="contactItemLabel">Handphone</div>
+              <div class="contactItemValue">
+                <a href="tel:+6281329329805">+6281-329-329-805</a><br/>
+                <a href="tel:+6281806685777">+62818-0668-5777</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      <!-- 2. Masalah & Tujuan -->
+      <section class="section" id="masalah">
+        <div class="sectionHeader">
+          <h3>2) Masalah & Tujuan</h3>
+          <div class="meta">Why</div>
+        </div>
+
+        <p class="lead" style="margin-bottom: 16px;">
+          Bagian ini menjelaskan <b>masalah yang sering terjadi</b> saat ini dan <b>solusi</b> yang akan diberikan oleh sistem baru.
+        </p>
+
+        <div class="grid2">
+          <div class="card problemCard">
+            <h4 style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <span>⚠️</span> Masalah yang Sering Terjadi
+            </h4>
+            <ul style="margin: 0; padding-left: 20px;">
+              <li><b>Pesanan manual</b> — tulis tangan rawan salah & butuh waktu lama</li>
+              <li><b>Dapur terlambat tahu</b> — pesanan tidak langsung masuk ke dapur</li>
+              <li><b>Pesanan online kacau</b> — tidak sinkron dengan pesanan di kasir</li>
+              <li><b>Laporan tidak akurat</b> — data antar outlet berbeda-beda</li>
+              <li><b>Sulit kontrol stok</b> — tidak tahu kapan harus beli bahan</li>
+            </ul>
+          </div>
+          <div class="card solutionCard">
+            <h4 style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <span>✅</span> Solusi yang Diberikan
+            </h4>
+            <ul style="margin: 0; padding-left: 20px;">
+              <li><b>Satu sistem terintegrasi</b> — semua pesanan (dine-in & online) dalam satu platform</li>
+              <li><b>Dapur langsung tahu</b> — pesanan otomatis muncul di monitor dapur</li>
+              <li><b>Pesanan online terhubung</b> — sinkron dengan sistem kasir</li>
+              <li><b>Laporan otomatis</b> — data real-time, akurat, dan konsisten</li>
+              <li><b>Stok terkontrol</b> — sistem tahu kapan harus restock</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="simpleExplanation" style="margin-top: 16px;">
+          <b>🎯 Tujuan Utama:</b> Membuat operasional restoran lebih <b>cepat</b>, <b>akurat</b>, dan <b>mudah dikontrol</b>. 
+          Sistem ini juga siap untuk ekspansi ke outlet baru di masa depan.
+        </div>
+      </section>
+
+      <!-- 3. Ruang Lingkup -->
+      <section class="section" id="scope">
+        <div class="sectionHeader">
+          <h3>3) Ruang Lingkup Sistem</h3>
+          <div class="meta">What</div>
+        </div>
+
+        <p class="lead">
+          Sistem ini terdiri dari <b>3 bagian utama</b>: aplikasi yang digunakan staff, sistem pusat yang mengatur semua data, 
+          dan koneksi ke layanan eksternal (pembayaran, notifikasi, dll).
+        </p>
+
+        <div class="simpleExplanation" style="margin-bottom: 16px;">
+          <b>💡 Penjelasan sederhana:</b> Sistem dirancang seperti puzzle — setiap bagian bisa ditambah atau dikurangi sesuai kebutuhan. 
+          Saat buka outlet baru, tinggal tambah saja tanpa perlu buat sistem baru.
+        </div>
+
+        <div class="grid3">
+          <div class="moduleCard">
+            <div class="moduleCardHeader">
+              <div class="moduleCardIcon">📱</div>
+              <h4>Aplikasi yang Digunakan</h4>
+            </div>
+            <ul>
+              <li><b>Komputer Kasir</b> — untuk input pesanan & pembayaran</li>
+              <li><b>Monitor Dapur</b> — untuk melihat antrian pesanan</li>
+              <li><b>Aplikasi Pelanggan</b> — untuk pesan via HP</li>
+              <li><b>Aplikasi Kurir</b> — untuk kurir internal (opsional)</li>
+            </ul>
+          </div>
+          <div class="moduleCard">
+            <div class="moduleCardHeader">
+              <div class="moduleCardIcon">⚙️</div>
+              <h4>Sistem Pusat (Cloud)</h4>
+            </div>
+            <ul>
+              <li><b>Penyimpanan pesanan</b> — semua pesanan tersimpan di cloud</li>
+              <li><b>Pengelolaan menu</b> — atur menu, promo, diskon</li>
+              <li><b>Kontrol stok</b> — tahu jumlah bahan tersedia</li>
+              <li><b>Laporan otomatis</b> — data penjualan & keuangan</li>
+            </ul>
+          </div>
+          <div class="moduleCard">
+            <div class="moduleCardHeader">
+              <div class="moduleCardIcon">🔗</div>
+              <h4>Koneksi Eksternal</h4>
+            </div>
+            <ul>
+              <li><b>Pembayaran digital</b> — QRIS, e-wallet, transfer bank</li>
+              <li><b>Notifikasi</b> — WhatsApp, SMS, Email</li>
+              <li><b>Maps & navigasi</b> — untuk delivery</li>
+              <li><b>Grab/GoJek</b> — integrasi kurir eksternal (opsional)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="noteGreen" style="margin-top: 16px;">
+          <b>📌 Perbedaan Pesanan Online:</b><br/>
+          • <b>DELIVERY</b> (pengantaran) — pakai kurir (bisa kurir sendiri atau Grab/GoJek)<br/>
+          • <b>PICKUP</b> (ambil sendiri) — pelanggan ambil langsung di outlet, tidak pakai kurir
+        </div>
+      </section>
+
+      <!-- 4. Flow Operasional -->
+      <section class="section" id="flow">
+        <div class="sectionHeader">
+          <h3>4) Flow Operasional (Diagram + Penjelasan)</h3>
+          <div class="meta">How</div>
+        </div>
+
+        <p class="lead">
+          Di bawah ini ada <b>3 alur berbeda</b> untuk 3 jenis layanan: <b>Dine-In</b> (makan di tempat), 
+          <b>Delivery</b> (pengantaran), dan <b>Pickup</b> (ambil sendiri). Cara baca: ikuti panah dari kiri ke kanan.
+        </p>
+        <div class="simpleExplanation" style="margin-bottom: 16px;">
+          <b>💡 Penjelasan:</b> Setiap alur menunjukkan langkah-langkah dari pesanan dibuat sampai selesai. 
+          Diagram ini membantu memahami bagaimana sistem bekerja dalam operasional sehari-hari.
+        </div>
+
+        <!-- Flow 1: Dine-in -->
+        <div class="flowWrap">
+          <div class="flowHead">
+            <div class="title">Flow 1 — Dine-In (Open Bill)</div>
+            <div class="note">Order bisa bertambah sebelum pembayaran</div>
+          </div>
+
+          <svg viewBox="0 0 1200 320" width="100%" height="auto" aria-label="Flow Dine-In">
+            <rect x="0" y="0" width="1200" height="320" fill="#fff"/>
+            <defs>
+              <filter id="ds1" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity=".10"/>
+              </filter>
+            </defs>
+
+            <g filter="url(#ds1)">
+              <rect x="60" y="70" rx="16" ry="16" width="220" height="90" fill="#fff7ed" stroke="#fed7aa"/>
+              <text x="85" y="110" font-size="18" fill="#7c4a00" font-weight="900">Customer</text>
+              <text x="85" y="135" font-size="14" fill="#7c4a00">pesan ke waiter</text>
+            </g>
+
+            <g filter="url(#ds1)">
+              <rect x="320" y="70" rx="16" ry="16" width="220" height="90" fill="#eff6ff" stroke="#bfdbfe"/>
+              <text x="345" y="110" font-size="18" fill="#1d4ed8" font-weight="900">Waiter</text>
+              <text x="345" y="135" font-size="14" fill="#1d4ed8">input order ke POS</text>
+            </g>
+
+            <g filter="url(#ds1)">
+              <rect x="580" y="40" rx="16" ry="16" width="250" height="120" fill="#f8fafc" stroke="#e2e8f0"/>
+              <text x="605" y="90" font-size="18" fill="#0f172a" font-weight="900">POS System</text>
+              <text x="605" y="115" font-size="14" fill="#334155">open bill per meja</text>
+              <text x="605" y="138" font-size="14" fill="#334155">kirim ke kitchen</text>
+            </g>
+
+            <g filter="url(#ds1)">
+              <rect x="870" y="70" rx="16" ry="16" width="250" height="90" fill="#ecfdf5" stroke="#bbf7d0"/>
+              <text x="895" y="110" font-size="18" fill="#166534" font-weight="900">Kitchen</text>
+              <text x="895" y="135" font-size="14" fill="#166534">update status</text>
+            </g>
+
+            <g filter="url(#ds1)">
+              <rect x="580" y="200" rx="16" ry="16" width="250" height="90" fill="#fff" stroke="#e2e8f0"/>
+              <text x="605" y="240" font-size="18" fill="#0f172a" font-weight="900">Cashier</text>
+              <text x="605" y="265" font-size="14" fill="#334155">close bill & bayar</text>
+            </g>
+
+            <g stroke="#94a3b8" stroke-width="3" fill="none">
+              <path d="M280 115 L320 115" />
+              <path d="M540 115 L580 115" />
+              <path d="M830 115 L870 115" />
+              <path d="M705 160 L705 200" />
+            </g>
+
+            <g fill="#94a3b8">
+              <polygon points="315,115 302,108 302,122"/>
+              <polygon points="575,115 562,108 562,122"/>
+              <polygon points="865,115 852,108 852,122"/>
+              <polygon points="705,200 698,187 712,187"/>
+            </g>
+
+            <text x="60" y="24" font-size="14" fill="#64748b">
+              Cara baca: Customer → Waiter → POS → Kitchen, lalu turun ke Cashier saat pembayaran.
+            </text>
+          </svg>
+
+          <div class="flowExplain">
+            <h4>📝 Penjelasan Alur Dine-In (Makan di Tempat)</h4>
+            <ol>
+              <li><b>Pelanggan pesan</b> → Waiter catat pesanan di komputer kasir (POS). Sistem buat tagihan untuk meja tersebut.</li>
+              <li><b>Pesanan ke dapur</b> → Sistem kirim pesanan ke monitor dapur. Dapur update status: "Sedang dibuat" → "Siap diantar".</li>
+              <li><b>Tambah pesanan</b> → Pelanggan bisa tambah pesanan sebelum bayar (tagihan masih terbuka).</li>
+              <li><b>Pembayaran</b> → Kasir proses pembayaran, tutup tagihan, selesai.</li>
+            </ol>
+            <div class="noteBlue">
+              <b>Status Pesanan:</b> Tagihan Dibuka → Sedang Dibuat → Siap → Tagihan Ditutup → Sudah Dibayar
+            </div>
+          </div>
+        </div>
+
+        <!-- Flow 2: Online Delivery -->
+        <div class="flowWrap" style="margin-top:12px;">
+          <div class="flowHead">
+            <div class="title">Flow 2 — Online Order (Delivery)</div>
+            <div class="note">Courier: Internal / Grab / GoJek</div>
+          </div>
+
+          <svg viewBox="0 0 1200 390" width="100%" height="auto" aria-label="Flow Online Delivery">
+            <rect x="0" y="0" width="1200" height="390" fill="#fff"/>
+            <defs>
+              <filter id="ds2" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity=".10"/>
+              </filter>
+            </defs>
+
+            <!-- Top row -->
+            <g filter="url(#ds2)">
+              <rect x="55" y="70" rx="16" ry="16" width="220" height="90" fill="#fff7ed" stroke="#fed7aa"/>
+              <text x="80" y="110" font-size="18" fill="#7c4a00" font-weight="900">Customer</text>
+              <text x="80" y="135" font-size="14" fill="#7c4a00">order delivery via app</text>
+            </g>
+
+            <g filter="url(#ds2)">
+              <rect x="305" y="70" rx="16" ry="16" width="240" height="90" fill="#eff6ff" stroke="#bfdbfe"/>
+              <text x="330" y="110" font-size="18" fill="#1d4ed8" font-weight="900">Customer App</text>
+              <text x="330" y="135" font-size="14" fill="#1d4ed8">kirim order ke POS</text>
+            </g>
+
+            <g filter="url(#ds2)">
+              <rect x="575" y="40" rx="16" ry="16" width="240" height="120" fill="#f8fafc" stroke="#e2e8f0"/>
+              <text x="600" y="90" font-size="18" fill="#0f172a" font-weight="900">Payment</text>
+              <text x="600" y="115" font-size="14" fill="#334155">PAID / FAILED / PENDING</text>
+              <text x="600" y="138" font-size="14" fill="#334155">verifikasi pembayaran</text>
+            </g>
+
+            <g filter="url(#ds2)">
+              <rect x="845" y="70" rx="16" ry="16" width="240" height="90" fill="#f8fafc" stroke="#e2e8f0"/>
+              <text x="870" y="110" font-size="18" fill="#0f172a" font-weight="900">POS System</text>
+              <text x="870" y="135" font-size="14" fill="#334155">antrian order outlet</text>
+            </g>
+
+            <!-- Bottom row -->
+            <g filter="url(#ds2)">
+              <rect x="575" y="230" rx="16" ry="16" width="240" height="90" fill="#ecfdf5" stroke="#bbf7d0"/>
+              <text x="600" y="270" font-size="18" fill="#166534" font-weight="900">Kitchen</text>
+              <text x="600" y="295" font-size="14" fill="#166534">Preparing → Ready</text>
+            </g>
+
+            <g filter="url(#ds2)">
+              <rect x="845" y="220" rx="16" ry="16" width="270" height="110" fill="#f0f9ff" stroke="#bae6fd"/>
+              <text x="870" y="258" font-size="18" fill="#075985" font-weight="900">Courier Delivery</text>
+              <text x="870" y="282" font-size="14" fill="#075985">Internal / Grab / GoJek</text>
+              <text x="870" y="305" font-size="13" fill="#075985">pickup → deliver → confirm</text>
+            </g>
+
+            <!-- arrows -->
+            <g stroke="#94a3b8" stroke-width="3" fill="none">
+              <path d="M275 115 L305 115" />
+              <path d="M545 115 L575 115" />
+              <path d="M815 115 L845 115" />
+              <path d="M965 160 L965 230" />
+              <path d="M815 275 L845 275" />
+            </g>
+            <g fill="#94a3b8">
+              <polygon points="300,115 287,108 287,122"/>
+              <polygon points="570,115 557,108 557,122"/>
+              <polygon points="840,115 827,108 827,122"/>
+              <polygon points="965,230 958,217 972,217"/>
+              <polygon points="840,275 827,268 827,282"/>
+            </g>
+
+            <text x="55" y="24" font-size="14" fill="#64748b">
+              Delivery: setelah Kitchen Ready, order didispatch ke kurir internal atau pihak ketiga (Grab/GoJek) sesuai kebijakan.
+            </text>
+          </svg>
+
+          <div class="flowExplain">
+            <h4>📝 Penjelasan Alur Online Delivery (Pengantaran)</h4>
+            <ol>
+              <li><b>Pelanggan pesan via HP</b> → Pilih "Delivery", isi alamat, pilih menu, checkout.</li>
+              <li><b>Pembayaran</b> → Sistem cek pembayaran (Lunas/Gagal/Menunggu). Jika lunas, lanjut ke dapur.</li>
+              <li><b>Pesanan ke dapur</b> → Sistem kirim pesanan ke dapur. Dapur buat sampai status "Siap".</li>
+              <li><b>Pengantaran</b> → Setelah siap, sistem buat tugas pengantaran:
+                <ul>
+                  <li><b>Kurir sendiri:</b> Kirim ke aplikasi kurir internal untuk diambil & diantar.</li>
+                  <li><b>Grab/GoJek:</b> Bisa pakai kurir Grab atau GoJek (opsional, sesuai kebutuhan).</li>
+                </ul>
+              </li>
+              <li><b>Sampai tujuan</b> → Kurir ambil pesanan, antar ke alamat, konfirmasi sudah sampai.</li>
+            </ol>
+            <div class="noteBlue">
+              <b>Status Pesanan:</b> Dibuat → Sudah Dibayar → Sedang Dibuat → Siap → Dikirim ke Kurir → Sedang Diantar → Sudah Sampai
+            </div>
+          </div>
+        </div>
+
+        <!-- Flow 3: Online Pickup -->
+        <div class="flowWrap" style="margin-top:12px;">
+          <div class="flowHead">
+            <div class="title">Flow 3 — Online Order (Pickup Counter)</div>
+            <div class="note">Tanpa courier</div>
+          </div>
+
+          <svg viewBox="0 0 1200 330" width="100%" height="auto" aria-label="Flow Online Pickup">
+            <rect x="0" y="0" width="1200" height="330" fill="#fff"/>
+            <defs>
+              <filter id="ds3" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity=".10"/>
+              </filter>
+            </defs>
+
+            <g filter="url(#ds3)">
+              <rect x="55" y="105" rx="16" ry="16" width="220" height="90" fill="#fff7ed" stroke="#fed7aa"/>
+              <text x="80" y="145" font-size="18" fill="#7c4a00" font-weight="900">Customer</text>
+              <text x="80" y="170" font-size="14" fill="#7c4a00">order pickup via app</text>
+            </g>
+
+            <g filter="url(#ds3)">
+              <rect x="305" y="105" rx="16" ry="16" width="240" height="90" fill="#eff6ff" stroke="#bfdbfe"/>
+              <text x="330" y="145" font-size="18" fill="#1d4ed8" font-weight="900">Customer App</text>
+              <text x="330" y="170" font-size="14" fill="#1d4ed8">kirim order ke POS</text>
+            </g>
+
+            <g filter="url(#ds3)">
+              <rect x="575" y="75" rx="16" ry="16" width="240" height="120" fill="#f8fafc" stroke="#e2e8f0"/>
+              <text x="600" y="125" font-size="18" fill="#0f172a" font-weight="900">Payment</text>
+              <text x="600" y="150" font-size="14" fill="#334155">PAID / FAILED / PENDING</text>
+              <text x="600" y="173" font-size="14" fill="#334155">verifikasi pembayaran</text>
+            </g>
+
+            <g filter="url(#ds3)">
+              <rect x="845" y="105" rx="16" ry="16" width="240" height="90" fill="#f8fafc" stroke="#e2e8f0"/>
+              <text x="870" y="145" font-size="18" fill="#0f172a" font-weight="900">POS System</text>
+              <text x="870" y="170" font-size="14" fill="#334155">antrian order outlet</text>
+            </g>
+
+            <g filter="url(#ds3)">
+              <rect x="575" y="220" rx="16" ry="16" width="240" height="90" fill="#ecfdf5" stroke="#bbf7d0"/>
+              <text x="600" y="260" font-size="18" fill="#166534" font-weight="900">Kitchen</text>
+              <text x="600" y="285" font-size="14" fill="#166534">Preparing → Ready</text>
+            </g>
+
+            <g filter="url(#ds3)">
+              <rect x="845" y="220" rx="16" ry="16" width="240" height="90" fill="#fff7ed" stroke="#fed7aa"/>
+              <text x="870" y="260" font-size="18" fill="#7c4a00" font-weight="900">Pickup Counter</text>
+              <text x="870" y="285" font-size="14" fill="#7c4a00">handover + verify</text>
+            </g>
+
+            <g stroke="#94a3b8" stroke-width="3" fill="none">
+              <path d="M275 150 L305 150" />
+              <path d="M545 150 L575 150" />
+              <path d="M815 150 L845 150" />
+              <path d="M965 195 L965 220" />
+              <path d="M815 265 L845 265" />
+            </g>
+
+            <g fill="#94a3b8">
+              <polygon points="300,150 287,143 287,157"/>
+              <polygon points="570,150 557,143 557,157"/>
+              <polygon points="840,150 827,143 827,157"/>
+              <polygon points="965,220 958,207 972,207"/>
+              <polygon points="840,265 827,258 827,272"/>
+            </g>
+
+            <text x="55" y="28" font-size="14" fill="#64748b">
+              Pickup: setelah Ready, customer ambil langsung di outlet (tanpa courier).
+            </text>
+          </svg>
+
+          <div class="flowExplain">
+            <h4>📝 Penjelasan Alur Online Pickup (Ambil Sendiri)</h4>
+            <ol>
+              <li><b>Pelanggan pesan via HP</b> → Pilih "Pickup" (ambil sendiri), pilih menu, bayar.</li>
+              <li><b>Pesanan ke dapur</b> → Sistem kirim pesanan ke dapur. Dapur buat sampai status "Siap Diambil".</li>
+              <li><b>Pesanan disiapkan</b> → Pesanan diletakkan di counter pickup. Staff verifikasi dengan Order ID atau QR code.</li>
+              <li><b>Pelanggan ambil</b> → Pelanggan datang ke outlet, tunjukkan Order ID/QR, ambil pesanan, selesai.</li>
+            </ol>
+            <div class="noteBlue">
+              <b>Status Pesanan:</b> Dibuat → Sudah Dibayar → Sedang Dibuat → Siap Diambil → Sudah Diambil
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 5. Modul Sistem -->
+      <section class="section" id="modules">
+        <div class="sectionHeader">
+          <h3>5) Modul Sistem (Fitur-Fitur Utama)</h3>
+          <div class="meta">Modules</div>
+        </div>
+
+        <p class="lead" style="margin-bottom: 16px;">
+          Sistem ini terdiri dari beberapa <b>modul</b> (bagian-bagian fitur) yang bekerja bersama. 
+          Setiap modul punya fungsi spesifik untuk memudahkan operasional restoran.
+        </p>
+
+        <div class="grid2">
+          <div class="moduleCard">
+            <div class="moduleCardHeader">
+              <div class="moduleCardIcon">👥</div>
+              <h4>Pengguna & Akses</h4>
+            </div>
+            <ul>
+              <li><b>Login & keamanan</b> — setiap user punya akun sendiri</li>
+              <li><b>Hak akses berbeda</b> — kasir, dapur, manager punya menu berbeda</li>
+              <li><b>Kelola outlet</b> — bisa atur beberapa outlet dalam satu sistem</li>
+            </ul>
+          </div>
+          <div class="moduleCard">
+            <div class="moduleCardHeader">
+              <div class="moduleCardIcon">💰</div>
+              <h4>Penjualan & Operasional</h4>
+            </div>
+            <ul>
+              <li><b>Kasir (POS)</b> — input pesanan & proses pembayaran</li>
+              <li><b>Monitor dapur</b> — antrian pesanan untuk dapur</li>
+              <li><b>Kelola shift</b> — catat shift kerja kasir</li>
+              <li><b>Denah meja</b> — atur layout meja restoran</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
+          <div class="moduleCard">
+            <div class="moduleCardHeader">
+              <div class="moduleCardIcon">🍔</div>
+              <h4>Menu, Promo & Pelanggan</h4>
+            </div>
+            <ul>
+              <li><b>Kelola menu</b> — tambah, edit, hapus menu</li>
+              <li><b>Promo & diskon</b> — atur voucher, diskon, paket promo</li>
+              <li><b>Data pelanggan</b> — simpan data & riwayat pesanan</li>
+              <li><b>Program loyalitas</b> — poin reward untuk pelanggan setia</li>
+            </ul>
+          </div>
+          <div class="moduleCard">
+            <div class="moduleCardHeader">
+              <div class="moduleCardIcon">📦</div>
+              <h4>Stok & Bahan Baku</h4>
+            </div>
+            <ul>
+              <li><b>Kontrol stok</b> — tahu jumlah bahan tersedia</li>
+              <li><b>Resep & BOM</b> — atur bahan untuk setiap menu</li>
+              <li><b>Pembelian bahan</b> — kelola pembelian dari supplier</li>
+              <li><b>Riwayat stok</b> — catatan perubahan stok (masuk/keluar)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
+          <div class="moduleCard">
+            <div class="moduleCardHeader">
+              <div class="moduleCardIcon">💳</div>
+              <h4>Pembayaran & Keuangan</h4>
+            </div>
+            <ul>
+              <li><b>Pembayaran digital</b> — QRIS, e-wallet, transfer bank</li>
+              <li><b>Rekonsiliasi</b> — cocokkan pembayaran dengan transaksi</li>
+              <li><b>Audit transaksi</b> — catatan lengkap semua transaksi</li>
+            </ul>
+          </div>
+          <div class="moduleCard">
+            <div class="moduleCardHeader">
+              <div class="moduleCardIcon">🚚</div>
+              <h4>Pengantaran & Laporan</h4>
+            </div>
+            <ul>
+              <li><b>Kelola kurir</b> — atur pengantaran kurir internal</li>
+              <li><b>Grab/GoJek</b> — integrasi dengan kurir eksternal (opsional)</li>
+              <li><b>Dashboard & laporan</b> — ringkasan penjualan harian/bulanan</li>
+              <li><b>Analitik</b> — analisis data untuk keputusan bisnis (opsional)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Implementasi & SaaS -->
+      <section class="section" id="saas">
+        <div class="sectionHeader">
+          <h3>6) Skema Implementasi & Model Layanan</h3>
+          <div class="meta">Delivery</div>
+        </div>
+
+        <p class="lead">
+          Sistem disediakan dengan model <b>SaaS (Software as a Service)</b> — artinya semua data tersimpan di cloud (internet) 
+          dan kami yang mengelola server, update, serta maintenance. <b>Outlet tidak perlu repot mengelola server sendiri.</b>
+        </p>
+
+        <div class="simpleExplanation" style="margin-bottom: 20px;">
+          <b>💡 Keuntungan SaaS:</b> Seperti langganan Netflix — bayar bulanan, semua sudah termasuk (hosting, update, support). 
+          Tidak perlu beli server mahal atau hire IT khusus.
+        </div>
+
+        <div class="grid2">
+          <div class="card" style="padding: 18px;">
+            <h4 style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+              <span>📋</span> Tahapan Implementasi
+            </h4>
+            <div class="timelineItem">
+              <div class="timelineIcon">1️⃣</div>
+              <div class="timelineContent">
+                <h4>Setup Awal</h4>
+                <p>Konfigurasi outlet, buat akun user, atur hak akses (kasir, dapur, manager)</p>
+              </div>
+            </div>
+            <div class="timelineItem">
+              <div class="timelineIcon">2️⃣</div>
+              <div class="timelineContent">
+                <h4>Aktivasi Sistem</h4>
+                <p>Install aplikasi kasir, monitor dapur, aplikasi pelanggan, dan koneksi pembayaran</p>
+              </div>
+            </div>
+            <div class="timelineItem">
+              <div class="timelineIcon">3️⃣</div>
+              <div class="timelineContent">
+                <h4>Testing & Training</h4>
+                <p>Uji sistem, training staff cara pakai, pastikan semua lancar</p>
+              </div>
+            </div>
+            <div class="timelineItem">
+              <div class="timelineIcon">4️⃣</div>
+              <div class="timelineContent">
+                <h4>Go-Live</h4>
+                <p>Sistem mulai dipakai, kami dampingi & monitor untuk memastikan berjalan baik</p>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="padding: 18px;">
+            <h4 style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+              <span>🛠️</span> Yang Termasuk dalam Layanan SaaS
+            </h4>
+            <div class="benefitCard">
+              <div class="benefitIcon">☁️</div>
+              <div class="benefitText"><b>Hosting & server</b> — semua data tersimpan aman di cloud</div>
+            </div>
+            <div class="benefitCard">
+              <div class="benefitIcon">🔧</div>
+              <div class="benefitText"><b>Maintenance & perbaikan</b> — jika ada bug, kami yang perbaiki</div>
+            </div>
+            <div class="benefitCard">
+              <div class="benefitIcon">💾</div>
+              <div class="benefitText"><b>Backup otomatis</b> — data di-backup rutin, aman dari kehilangan</div>
+            </div>
+            <div class="benefitCard">
+              <div class="benefitIcon">📊</div>
+              <div class="benefitText"><b>Monitoring performa</b> — kami pantau sistem 24/7</div>
+            </div>
+            <div class="benefitCard">
+              <div class="benefitIcon">🔄</div>
+              <div class="benefitText"><b>Update berkala</b> — fitur baru & perbaikan keamanan</div>
+            </div>
+            <div class="benefitCard">
+              <div class="benefitIcon">📞</div>
+              <div class="benefitText"><b>Support teknis</b> — bantuan jika ada masalah operasional</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="noteBlue" style="margin-top: 16px;">
+          <b>💬 Catatan:</b> Integrasi dengan Grab/GoJek bisa dibahas lebih detail saat workshop kebutuhan. 
+          Tergantung kebijakan operasional & kebutuhan bisnis.
+        </div>
+      </section>
+
+      <!-- 7. Pricing -->
+      <section class="section" id="pricing">
+        <div class="sectionHeader">
+          <h3>7) Estimasi Biaya</h3>
+          <div class="meta">Pricing</div>
+        </div>
+
+        <p class="lead">
+          Biaya berikut adalah <b>estimasi awal</b>. Harga final akan ditentukan setelah workshop kebutuhan, 
+          finalisasi scope, dan kesepakatan integrasi (misalnya Grab/GoJek).
+        </p>
+
+        <div class="simpleExplanation" style="margin-bottom: 20px;">
+          <b>💡 Penjelasan:</b> Ada 2 jenis biaya: <b>biaya setup sekali</b> (untuk pembuatan & instalasi) 
+          dan <b>biaya bulanan</b> (untuk layanan SaaS berkelanjutan).
+        </div>
+
+        <div class="grid2">
+          <div class="pricingCard">
+            <h4 style="display: flex; align-items: center; gap: 8px;">
+              <span>💼</span> Biaya Setup Awal
+            </h4>
+            <div style="font-size: 12px; color: rgba(15,23,42,.60); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em;">
+              Dibayar Sekali
+            </div>
+            <div class="pricingAmount">Rp XXX.XXX.XXX</div>
+            <div class="pricingDesc">
+              <b>Termasuk:</b><br/>
+              • Analisis kebutuhan bisnis<br/>
+              • Pembuatan sistem lengkap<br/>
+              • Setup & konfigurasi outlet<br/>
+              • Install aplikasi (kasir, dapur, customer app)<br/>
+              • Testing & training staff<br/>
+              • Pendampingan awal saat go-live
+            </div>
+          </div>
+
+          <div class="pricingCard">
+            <h4 style="display: flex; align-items: center; gap: 8px;">
+              <span>📅</span> Biaya Berlangganan Bulanan
+            </h4>
+            <div style="font-size: 12px; color: rgba(15,23,42,.60); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em;">
+              Per Outlet / Bulan
+            </div>
+            <div class="pricingAmount">Rp X.XXX.XXX</div>
+            <div class="pricingDesc">
+              <b>Termasuk:</b><br/>
+              • Hosting & server cloud<br/>
+              • Maintenance & perbaikan bug<br/>
+              • Backup data otomatis<br/>
+              • Monitoring sistem 24/7<br/>
+              • Update fitur & keamanan<br/>
+              • Support teknis operasional
+            </div>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top: 16px;">
+          <b>📊 Faktor yang Mempengaruhi Harga:</b><br/>
+          • Jumlah outlet yang aktif<br/>
+          • Modul/fitur yang dipilih<br/>
+          • Kebutuhan POS offline (tanpa internet)<br/>
+          • Level support yang diinginkan<br/>
+          • Integrasi pihak ketiga (Grab/GoJek)
+        </div>
+      </section>
+
+      <!-- 8. Closing -->
+      <section class="section" id="closing">
+        <div class="sectionHeader">
+          <h3>8) Penutup</h3>
+          <div class="meta">Next step</div>
+        </div>
+
+        <p class="lead" style="margin-bottom: 20px;">
+          Sistem ini dirancang untuk membuat operasional restoran lebih <b>efisien</b>, <b>terkontrol</b>, dan <b>siap berkembang</b>. 
+          Berikut ringkasan manfaat dan langkah selanjutnya.
+        </p>
+
+        <div class="grid2">
+          <div class="card" style="padding: 18px;">
+            <h4 style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+              <span>🎯</span> Manfaat untuk Bisnis
+            </h4>
+            <div class="benefitCard">
+              <div class="benefitIcon">⚡</div>
+              <div class="benefitText"><b>Operasional lebih cepat</b> — pesanan diproses lebih efisien, minim kesalahan</div>
+            </div>
+            <div class="benefitCard">
+              <div class="benefitIcon">📊</div>
+              <div class="benefitText"><b>Data akurat real-time</b> — tahu penjualan & stok kapan saja</div>
+            </div>
+            <div class="benefitCard">
+              <div class="benefitIcon">🚚</div>
+              <div class="benefitText"><b>Delivery fleksibel</b> — bisa pakai kurir sendiri atau Grab/GoJek</div>
+            </div>
+            <div class="benefitCard">
+              <div class="benefitIcon">📈</div>
+              <div class="benefitText"><b>Siap berkembang</b> — mudah tambah outlet baru tanpa sistem baru</div>
+            </div>
+            <div class="benefitCard">
+              <div class="benefitIcon">🎛️</div>
+              <div class="benefitText"><b>Kontrol penuh</b> — semua operasional terpantau dari satu dashboard</div>
+            </div>
+          </div>
+          <div class="card" style="padding: 18px;">
+            <h4 style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+              <span>📋</span> Langkah Selanjutnya
+            </h4>
+            <div class="timelineItem">
+              <div class="timelineIcon">1️⃣</div>
+              <div class="timelineContent">
+                <h4>Kickoff Meeting</h4>
+                <p>Diskusi awal untuk memahami kebutuhan detail</p>
+              </div>
+            </div>
+            <div class="timelineItem">
+              <div class="timelineIcon">2️⃣</div>
+              <div class="timelineContent">
+                <h4>Workshop & Scope</h4>
+                <p>Workshop kebutuhan, finalisasi fitur yang dibutuhkan</p>
+              </div>
+            </div>
+            <div class="timelineItem">
+              <div class="timelineIcon">3️⃣</div>
+              <div class="timelineContent">
+                <h4>Finalisasi Harga & Timeline</h4>
+                <p>Setujui harga final & jadwal implementasi</p>
+              </div>
+            </div>
+            <div class="timelineItem">
+              <div class="timelineIcon">4️⃣</div>
+              <div class="timelineContent">
+                <h4>Implementasi</h4>
+                <p>Pembuatan sistem & setup bertahap</p>
+              </div>
+            </div>
+            <div class="timelineItem">
+              <div class="timelineIcon">5️⃣</div>
+              <div class="timelineContent">
+                <h4>Go-Live</h4>
+                <p>Sistem mulai digunakan, kami dampingi & monitor</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="noteGreen" style="margin-top: 16px;">
+          <b>📸 Referensi Visual:</b> Gambar contoh tampilan sistem ada di <b>Appendix A</b> (halaman terakhir) 
+          untuk membantu visualisasi bagaimana sistem akan terlihat dan digunakan.
+        </div>
+      </section>
+
+      <!-- Appendix A -->
+      <section class="section" id="appendix-a">
+        <div class="sectionHeader">
+          <h3>Appendix A — UI Reference (Lampiran)</h3>
+          <div class="meta">Reference only</div>
+        </div>
+
+        <p class="lead">
+          Lampiran ini berisi <b>referensi visual</b> (existing / sample UI) untuk membantu pemahaman flow operasional.
+          Lampiran tidak mengubah scope utama proposal.
+        </p>
+
+        <div class="callout">
+          <b>Disclaimer:</b> Gambar pada appendix adalah referensi tampilan agar stakeholder mudah membayangkan penggunaan sistem.
+          Detail final UI dapat menyesuaikan kebutuhan brand dan operasional.
+        </div>
+
+        <!-- DRIVE LINKS (direct render) -->
+        <div class="gallery">
+
+          <!-- Kasir -->
+          <div class="shot">
+            <div class="cap">
+              <b>Komputer Kasir (POS / Cashier)</b>
+              <span>Transaksi, close bill, pembayaran</span>
+            </div>
+            <img alt="Komputer Kasir (POS)" src="https://i.postimg.cc/jSwLtCv1/Screenshot_2026_01_17_at_09_56_27.png"/>
+          </div>
+
+          <!-- Customer App -->
+          <div class="shot">
+            <div class="cap">
+              <b>Mobile App Customer</b>
+              <span>Order delivery / pickup</span>
+            </div>
+            <img alt="Mobile App Customer" src="https://i.postimg.cc/Sx2JkjDF/Screenshot_2026_01_17_at_09_57_45.png"/>
+          </div>
+
+          <!-- History Stock -->
+          <div class="shot wide">
+            <div class="cap">
+              <b>History Perubahan Stock</b>
+              <span>Audit trail perubahan stok</span>
+            </div>
+            <img alt="History Perubahan Stock" src="https://i.postimg.cc/fRtJDkBs/Screenshot_2026_01_18_at_11_43_14.png"/>
+          </div>
+
+          <!-- Master Menu -->
+          <div class="shot wide">
+            <div class="cap">
+              <b>Master Menu / Stock / Data Master</b>
+              <span>Pengelolaan menu & master data</span>
+            </div>
+            <img alt="Master Menu" src="https://i.postimg.cc/BnLX4tMG/Screenshot_2026_01_18_at_11_42_24.png"/>
+
+          </div>
+
+          <!-- Denah Table -->
+          <div class="shot wide">
+            <div class="cap">
+              <b>Table Denah sesuai denah resto</b>
+              <span>Mapping meja dine-in</span>
+            </div>
+            <img alt="Denah Table" src="https://i.postimg.cc/DwJ8nmB2/Screenshot_2026_01_18_at_11_43_39.png"/>
+
+          </div>
+
+          <!-- Order -->
+          <div class="shot">
+            <div class="cap">
+              <b>Order</b>
+              <span>Pilih order item & qty</span>
+            </div>
+            <img alt="Order" src="https://i.postimg.cc/CxBzSdmh/Screenshot_2026_01_18_at_11_43_58.png"/>
+          </div>
+
+          <!-- Review -->
+          <div class="shot">
+            <div class="cap">
+              <b>Review Order</b>
+              <span>Konfirmasi sebelum bayar</span>
+            </div>
+            <img alt="Review Order" src="https://i.postimg.cc/dVkLwD4Q/Screenshot_2026_01_18_at_11_44_10.png"/>
+          </div>
+
+          <!-- QRIS -->
+          <div class="shot wide">
+            <div class="cap">
+              <b>Payment QRIS</b>
+              <span>Status payment masuk ke sistem</span>
+            </div>
+            <img alt="Payment QRIS" src="https://i.postimg.cc/Gm8Hd9qh/Screenshot_2026_01_18_at_11_44_22.png"/>
+          </div>
+
+        </div>
+
+      </section>
+
+      <div class="pager">
+        <button class="btn" id="prev">◀︎ Prev</button>
+        <button class="btn" id="next">Next ▶︎</button>
+        <button class="btn" onclick="window.print()">⎙ Print / Save PDF</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      const sections = Array.from(document.querySelectorAll("section.section"));
+      const nav = document.getElementById("nav");
+      const navLinks = Array.from(nav.querySelectorAll("a"));
+      const btnPrev = document.getElementById("prev");
+      const btnNext = document.getElementById("next");
+
+      function idxFromHash(){
+        const h = decodeURIComponent(location.hash || "#ringkasan");
+        const i = sections.findIndex(s => "#" + s.id === h);
+        return i >= 0 ? i : 0;
+      }
+
+      function setActive(i){
+        navLinks.forEach(a => a.classList.remove("active"));
+        const link = navLinks.find(a => Number(a.dataset.i) === i);
+        if(link) link.classList.add("active");
+        btnPrev.disabled = i <= 0;
+        btnNext.disabled = i >= sections.length - 1;
+      }
+
+      function go(i){
+        i = Math.max(0, Math.min(sections.length - 1, i));
+        const id = sections[i].id;
+        history.replaceState(null, "", "#" + id);
+        document.getElementById(id).scrollIntoView({behavior:"smooth", block:"start"});
+        setActive(i);
+      }
+
+      navLinks.forEach(a => {
+        a.addEventListener("click", (e)=>{
+          e.preventDefault();
+          go(Number(a.dataset.i));
+        });
+      });
+
+      btnPrev.addEventListener("click", ()=> go(idxFromHash() - 1));
+      btnNext.addEventListener("click", ()=> go(idxFromHash() + 1));
+      window.addEventListener("hashchange", ()=> setActive(idxFromHash()));
+      setActive(idxFromHash());
+    })();
+  </script>
+</body>
+</html>
